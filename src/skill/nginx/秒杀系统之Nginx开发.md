@@ -300,7 +300,7 @@ return user_id
 
 如果请求url=http://127.0.0.1:8080/domain/test?st=09876tryu54321&productId=202210104591，则上图中的变量ngx.var.st=09876tryu54321，ngx.var.product_id=202210104591。nginx中的变量说明如下：
 
-![img.png](秒杀系统之Nginx开发/configParam.png)
+
 2.配置nginx.conf，在根目录下新建html文件夹，新建page.html和html_fail.html静态文件模拟请求。
 
 ```
