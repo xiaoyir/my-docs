@@ -6,7 +6,7 @@ title: 博客主页
 heroImage: https://theme-hope-assets.vuejs.press/logo.svg
 heroText: 霓虹灯
 heroFullScreen: true
-tagline: 你可以在这里放置你的口号与标语
+tagline: 你收到就好
 projects:
   - icon: project
     name: 项目名称
