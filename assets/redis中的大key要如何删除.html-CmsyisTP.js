@@ -1,0 +1,85 @@
+import{_ as s,c as n,o as e,d as a}from"./app-J3W_iQKP.js";const i={},l=a(`<h1 id="redis中的大key要如何删除" tabindex="-1"><a class="header-anchor" href="#redis中的大key要如何删除"><span>redis中的大key要如何删除？</span></a></h1><p>大家好，我是小义。今天来聊聊面试中的高频考点：如何处理redis缓存中的大key? 大 key 其实并不是指 key 的值很大，而是 key 对应的 value 很大，占了很大内存。</p><h2 id="为什么会有大key" tabindex="-1"><a class="header-anchor" href="#为什么会有大key"><span>为什么会有大Key？</span></a></h2><h3 id="出现的原因" tabindex="-1"><a class="header-anchor" href="#出现的原因"><span>出现的原因</span></a></h3><p>了解大Key的成因是解决问题的第一步。大Key的形成可能源于多种因素，包括但不限于：</p><ul><li>业务逻辑设计不当：如将所有用户信息存储在一个哈希中。</li><li>数据模型未优化：数据结构选择不当，导致存储效率低下。</li><li>过期策略设置不合理：如清理不及时，导致列表数据堆积。</li></ul><h3 id="大小的标准" tabindex="-1"><a class="header-anchor" href="#大小的标准"><span>大小的标准</span></a></h3><p>那具体多大才算大key呢？参考标准大致如下：</p><ul><li>String 类型的值大于 1 MB</li><li>Hash、List、Set、ZSet类型的元素的个数超过 5000个</li></ul><h3 id="影响的结果" tabindex="-1"><a class="header-anchor" href="#影响的结果"><span>影响的结果</span></a></h3><p>大key会带来以下四种危害：</p><ul><li><p>资源消耗：大Key会占用较多的内存资源，可能导致其他数据无法被有效缓存，同时在内存不足时可能触发淘汰机制，影响数据的完整性。</p></li><li><p>性能影响：操作大Key可能导致处理延迟增加，尤其是在高负载情况下，可能会阻塞其他操作，从而影响Redis的整体性能和响应速度。</p></li><li><p>内存分布不均：在redis cluster集群模式中，大key一般不会分片分布，造成单节点内存占用过高，出现数据倾斜的情况。</p></li><li><p>数据一致性和恢复问题：在主从复制和数据迁移场景中，大Key可能导致同步和迁移延迟，增加数据丢失的风险，同时可能延长故障恢复时间。</p></li></ul><h2 id="如何查找大key" tabindex="-1"><a class="header-anchor" href="#如何查找大key"><span>如何查找大key?</span></a></h2><p>这里介绍一个好用的查找大key的第三方工具，用python语言编写的redis-rdb-tools，可以用来解析 Redis 快照（RDB）文件。要使用该工具得先下载python，具体安装过程可以参考网上的教程，下面介绍几个常用命令：</p><ul><li>将rdb文件转成csv文件</li></ul><div class="language- line-numbers-mode" data-highlighter="shiki" data-ext="" data-title="" style="--shiki-light:#24292e;--shiki-dark:#abb2bf;--shiki-light-bg:#fff;--shiki-dark-bg:#282c34;"><pre class="shiki shiki-themes github-light one-dark-pro vp-code"><code><span class="line"><span>rdb -c memory /mnt/data/redis/dump.rdb &gt;  /mnt/data/redis/memory.csv</span></span></code></pre><div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0;"><div class="line-number"></div></div></div><ul><li>导出内存中排名前3的keys</li></ul><div class="language- line-numbers-mode" data-highlighter="shiki" data-ext="" data-title="" style="--shiki-light:#24292e;--shiki-dark:#abb2bf;--shiki-light-bg:#fff;--shiki-dark-bg:#282c34;"><pre class="shiki shiki-themes github-light one-dark-pro vp-code"><code><span class="line"><span>rdb --command memory --largest 3 dump.rdb</span></span></code></pre><div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0;"><div class="line-number"></div></div></div><ul><li>导出大于 10 kb 的 key 输出到一个表格文件</li></ul><div class="language- line-numbers-mode" data-highlighter="shiki" data-ext="" data-title="" style="--shiki-light:#24292e;--shiki-dark:#abb2bf;--shiki-light-bg:#fff;--shiki-dark-bg:#282c34;"><pre class="shiki shiki-themes github-light one-dark-pro vp-code"><code><span class="line"><span>rdb dump.rdb -c memory --bytes 10240 -f redis.csv</span></span></code></pre><div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0;"><div class="line-number"></div></div></div><h2 id="如何删除bigkey" tabindex="-1"><a class="header-anchor" href="#如何删除bigkey"><span>如何删除bigkey?</span></a></h2><p>针对大key，肯定是要删除的，那怎么删除才最高效呢？直接用del命令行不行？答案是不行。Redis 官方文档描述到：https://redis.io/docs/latest/commands/del/</p><p>1、String 类型的key，DEL 时间复杂度是 O(1)，大key除外。</p><p>2、List/Hash/Set/ZSet 类型的key，DEL 时间复杂度是 O(M)，M 为元素数量，元素越多，耗时越久。</p><h3 id="一次性删除的后果" tabindex="-1"><a class="header-anchor" href="#一次性删除的后果"><span>一次性删除的后果</span></a></h3><p>大Key如果一次性执行删除操作，会立即触发大量内存的释放过程。这个过程中，操作系统需要将释放的内存块重新插入空闲内存块链表，以便之后的管理和再分配。由于这个过程是同步进行的，并且可能涉及大量的内存块操作，因此它将占用相当一部分处理时间，并可能造成Redis主线程的阻塞。</p><p>这种阻塞会导致Redis无法及时响应其他命令请求，从而引起请求超时，超时的累积可能会导致Redis连接耗尽，进而产生服务异常。</p><p>因此删除大key，一定要慎之又慎，可以选择异步删除或批量删除。</p><h3 id="异常删除" tabindex="-1"><a class="header-anchor" href="#异常删除"><span>异常删除</span></a></h3><p>Redis从 4.0开始， 可以使用 UNLINK 命令来异步删除大key，删除大Key的语法与DEL命令相同。</p><div class="language- line-numbers-mode" data-highlighter="shiki" data-ext="" data-title="" style="--shiki-light:#24292e;--shiki-dark:#abb2bf;--shiki-light-bg:#fff;--shiki-dark-bg:#282c34;"><pre class="shiki shiki-themes github-light one-dark-pro vp-code"><code><span class="line"><span>UNLINK bigkey</span></span></code></pre><div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0;"><div class="line-number"></div></div></div><p>当使用UNLINK删除一个大Key时，Redis不会立即释放关联的内存空间，而是将删除操作放入后台处理队列中。Redis会在处理命令的间隙，逐步执行后台队列中的删除操作，从而不会显著影响服务器的响应性能。</p><h3 id="批量删除" tabindex="-1"><a class="header-anchor" href="#批量删除"><span>批量删除</span></a></h3><p>主要是针对Hash、List、Set、Zset，具体操作见下方代码描述</p><div class="language- line-numbers-mode" data-highlighter="shiki" data-ext="" data-title="" style="--shiki-light:#24292e;--shiki-dark:#abb2bf;--shiki-light-bg:#fff;--shiki-dark-bg:#282c34;"><pre class="shiki shiki-themes github-light one-dark-pro vp-code"><code><span class="line"><span>@Component</span></span>
+<span class="line"><span>@Slf4j</span></span>
+<span class="line"><span>public class RedisUtils {</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    @Autowired</span></span>
+<span class="line"><span>    private StringRedisTemplate redisTemplate;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    /**</span></span>
+<span class="line"><span>     * Hash删除: hscan + hdel</span></span>
+<span class="line"><span>     * @param key 大key</span></span>
+<span class="line"><span>     * @param match 要匹配的hash的key,支持正则表达式</span></span>
+<span class="line"><span>     * @param count  每次扫描的记录数。值越小，扫描次数越过、越耗时。建议设置在1000-10000</span></span>
+<span class="line"><span>     */</span></span>
+<span class="line"><span>    public void delBigHash(String key, String match, int count) {</span></span>
+<span class="line"><span>        ScanOptions scanOptions = ScanOptions.scanOptions().match(match).count(count).build();</span></span>
+<span class="line"><span>        Cursor&lt;Map.Entry&lt;Object, Object&gt;&gt; cursor = redisTemplate.opsForHash().scan(key, scanOptions);</span></span>
+<span class="line"><span>        while (cursor.hasNext()) {</span></span>
+<span class="line"><span>            Map.Entry&lt;Object, Object&gt; next = cursor.next();</span></span>
+<span class="line"><span>            redisTemplate.opsForHash().delete(key, next.getKey());</span></span>
+<span class="line"><span>            log.info(&quot;del:&quot;+ next.getKey());</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span>        try {</span></span>
+<span class="line"><span>            //遍历完成后，游标需要关闭</span></span>
+<span class="line"><span>            cursor.close();</span></span>
+<span class="line"><span>        } catch (IOException e) {</span></span>
+<span class="line"><span>            throw new RuntimeException(e);</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    /**</span></span>
+<span class="line"><span>     * List删除: trim + del</span></span>
+<span class="line"><span>     * @param key</span></span>
+<span class="line"><span>     * @param num 每次删除的个数</span></span>
+<span class="line"><span>     */</span></span>
+<span class="line"><span>    public void delBigList(String key, int num) {</span></span>
+<span class="line"><span>        Long size = redisTemplate.opsForList().size(key);</span></span>
+<span class="line"><span>        int counter = 0;</span></span>
+<span class="line"><span>        while (counter &lt; size) {</span></span>
+<span class="line"><span>            //每次从左侧截掉 num 个</span></span>
+<span class="line"><span>            redisTemplate.opsForList().trim(key, 0, num);</span></span>
+<span class="line"><span>            counter += num;</span></span>
+<span class="line"><span>            log.info(&quot;count=&quot;+counter);</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span>        //最终删除key</span></span>
+<span class="line"><span>        redisTemplate.delete(key);</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    /**</span></span>
+<span class="line"><span>     * Set删除: sscan + srem</span></span>
+<span class="line"><span>     */</span></span>
+<span class="line"><span>    public void delBigSet(String key, int count) {</span></span>
+<span class="line"><span>        ScanOptions scanOptions = ScanOptions.scanOptions().count(count).build();</span></span>
+<span class="line"><span>        Cursor&lt;String&gt; cursor = redisTemplate.opsForSet().scan(key, scanOptions);</span></span>
+<span class="line"><span>        while (cursor.hasNext()) {</span></span>
+<span class="line"><span>            String value = cursor.next();</span></span>
+<span class="line"><span>            redisTemplate.opsForSet().remove(key, value);</span></span>
+<span class="line"><span>            log.info(&quot;set del:&quot;+ value);</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span>        try {</span></span>
+<span class="line"><span>            //遍历完成后，游标需要关闭</span></span>
+<span class="line"><span>            cursor.close();</span></span>
+<span class="line"><span>        } catch (IOException e) {</span></span>
+<span class="line"><span>            throw new RuntimeException(e);</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    /**</span></span>
+<span class="line"><span>     * ZSet删除: zscan + zrem</span></span>
+<span class="line"><span>     */</span></span>
+<span class="line"><span>    public void delBigZSet(String key, int count) {</span></span>
+<span class="line"><span>        ScanOptions scanOptions = ScanOptions.scanOptions().count(count).build();</span></span>
+<span class="line"><span>        Cursor&lt;ZSetOperations.TypedTuple&lt;String&gt;&gt; cursor = redisTemplate.opsForZSet().scan(key, scanOptions);</span></span>
+<span class="line"><span>        while (cursor.hasNext()) {</span></span>
+<span class="line"><span>            ZSetOperations.TypedTuple&lt;String&gt; next = cursor.next();</span></span>
+<span class="line"><span>            redisTemplate.opsForZSet().remove(key, next.getValue());</span></span>
+<span class="line"><span>            log.info(&quot;zset del -&gt; value:&quot;+ next.getValue() + &quot;, score:&quot;+ next.getScore());</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span>        try {</span></span>
+<span class="line"><span>            //遍历完成后，游标需要关闭</span></span>
+<span class="line"><span>            cursor.close();</span></span>
+<span class="line"><span>        } catch (IOException e) {</span></span>
+<span class="line"><span>            throw new RuntimeException(e);</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>}</span></span></code></pre><div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0;"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h2 id="结语" tabindex="-1"><a class="header-anchor" href="#结语"><span>结语</span></a></h2><p>在Redis的世界里，大Key问题就像是一颗隐藏的炸弹，随时可能引发性能危机，但通过合理的策略和持续的优化，就可以有效地控制其对系统性能的影响。</p>`,37),p=[l];function d(t,r){return e(),n("div",null,p)}const u=s(i,[["render",d],["__file","redis中的大key要如何删除.html.vue"]]),v=JSON.parse('{"path":"/skill/redis/redis%E4%B8%AD%E7%9A%84%E5%A4%A7key%E8%A6%81%E5%A6%82%E4%BD%95%E5%88%A0%E9%99%A4.html","title":"redis中的大key要如何删除？","lang":"zh-CN","frontmatter":{"description":"redis中的大key要如何删除？ 大家好，我是小义。今天来聊聊面试中的高频考点：如何处理redis缓存中的大key? 大 key 其实并不是指 key 的值很大，而是 key 对应的 value 很大，占了很大内存。 为什么会有大Key？ 出现的原因 了解大Key的成因是解决问题的第一步。大Key的形成可能源于多种因素，包括但不限于： 业务逻辑设计不...","head":[["meta",{"property":"og:url","content":"https://mister-hope.github.io/my-docs/skill/redis/redis%E4%B8%AD%E7%9A%84%E5%A4%A7key%E8%A6%81%E5%A6%82%E4%BD%95%E5%88%A0%E9%99%A4.html"}],["meta",{"property":"og:site_name","content":"Java库"}],["meta",{"property":"og:title","content":"redis中的大key要如何删除？"}],["meta",{"property":"og:description","content":"redis中的大key要如何删除？ 大家好，我是小义。今天来聊聊面试中的高频考点：如何处理redis缓存中的大key? 大 key 其实并不是指 key 的值很大，而是 key 对应的 value 很大，占了很大内存。 为什么会有大Key？ 出现的原因 了解大Key的成因是解决问题的第一步。大Key的形成可能源于多种因素，包括但不限于： 业务逻辑设计不..."}],["meta",{"property":"og:type","content":"article"}],["meta",{"property":"og:locale","content":"zh-CN"}],["meta",{"property":"og:updated_time","content":"2024-06-02T09:24:29.000Z"}],["meta",{"property":"article:author","content":"程序员小义"}],["meta",{"property":"article:modified_time","content":"2024-06-02T09:24:29.000Z"}],["script",{"type":"application/ld+json"},"{\\"@context\\":\\"https://schema.org\\",\\"@type\\":\\"Article\\",\\"headline\\":\\"redis中的大key要如何删除？\\",\\"image\\":[\\"\\"],\\"dateModified\\":\\"2024-06-02T09:24:29.000Z\\",\\"author\\":[{\\"@type\\":\\"Person\\",\\"name\\":\\"程序员小义\\",\\"url\\":\\"https://mister-hope.com\\"}]}"]]},"headers":[{"level":2,"title":"为什么会有大Key？","slug":"为什么会有大key","link":"#为什么会有大key","children":[{"level":3,"title":"出现的原因","slug":"出现的原因","link":"#出现的原因","children":[]},{"level":3,"title":"大小的标准","slug":"大小的标准","link":"#大小的标准","children":[]},{"level":3,"title":"影响的结果","slug":"影响的结果","link":"#影响的结果","children":[]}]},{"level":2,"title":"如何查找大key?","slug":"如何查找大key","link":"#如何查找大key","children":[]},{"level":2,"title":"如何删除bigkey?","slug":"如何删除bigkey","link":"#如何删除bigkey","children":[{"level":3,"title":"一次性删除的后果","slug":"一次性删除的后果","link":"#一次性删除的后果","children":[]},{"level":3,"title":"异常删除","slug":"异常删除","link":"#异常删除","children":[]},{"level":3,"title":"批量删除","slug":"批量删除","link":"#批量删除","children":[]}]},{"level":2,"title":"结语","slug":"结语","link":"#结语","children":[]}],"git":{"createdTime":1717320269000,"updatedTime":1717320269000,"contributors":[{"name":"whuhbz","email":"463436681@qq.com","commits":1}]},"readingTime":{"minutes":4.74,"words":1423},"filePathRelative":"skill/redis/redis中的大key要如何删除.md","localizedDate":"2024年6月2日","excerpt":"\\n<p>大家好，我是小义。今天来聊聊面试中的高频考点：如何处理redis缓存中的大key? 大 key 其实并不是指 key 的值很大，而是 key 对应的 value 很大，占了很大内存。</p>\\n<h2>为什么会有大Key？</h2>\\n<h3>出现的原因</h3>\\n<p>了解大Key的成因是解决问题的第一步。大Key的形成可能源于多种因素，包括但不限于：</p>\\n<ul>\\n<li>业务逻辑设计不当：如将所有用户信息存储在一个哈希中。</li>\\n<li>数据模型未优化：数据结构选择不当，导致存储效率低下。</li>\\n<li>过期策略设置不合理：如清理不及时，导致列表数据堆积。</li>\\n</ul>","autoDesc":true}');export{u as comp,v as data};
