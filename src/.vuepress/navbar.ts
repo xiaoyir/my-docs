@@ -2,7 +2,7 @@ import { navbar } from "vuepress-theme-hope";
 
 export default navbar([
   "/",
-  "/content/",
+  "/skill/",
   // {
   //   text: "博文",
   //   icon: "pen-to-square",
@@ -50,7 +50,7 @@ export default navbar([
   //   link: "https://theme-hope.vuejs.press/zh/",
   // },
   {
-    text: "AI",
+    text: "AI探索",
     icon: "book",
     link: "http://chat.openai.com/",
   },
