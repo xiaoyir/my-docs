@@ -1,3 +1,6 @@
+---
+title: ThreadLocal正确用法
+---
 # 你真的会用ThreadLocal吗
 
 ### 先来解释一下什么是ThreadLocal？

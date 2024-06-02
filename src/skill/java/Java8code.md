@@ -1,6 +1,5 @@
 ---
 title: Java8编程小技巧
-index: 0
 icon: laptop-code
 category:
   - java

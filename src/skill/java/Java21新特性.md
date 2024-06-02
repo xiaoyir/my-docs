@@ -1,6 +1,5 @@
 ---
 title: Java21新特性
-index: false
 icon: laptop-code
 category:
   - java

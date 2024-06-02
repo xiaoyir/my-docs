@@ -1,7 +1,7 @@
 ---
 title: 学习指南
-index: false
-icon: laptop-code
+index: 0
+icon: book
 sticky: true
 star: true
 category:
