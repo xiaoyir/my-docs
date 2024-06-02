@@ -1,7 +1,7 @@
 import { defineUserConfig } from "vuepress";
 import theme from "./theme.js";
 import { getDirname, path } from "vuepress/utils";
-
+import { searchPlugin } from "@vuepress/plugin-search";
 
 export default defineUserConfig({
 
@@ -21,4 +21,9 @@ export default defineUserConfig({
         "./components/BlogHero.vue",
     ),
   },
+  plugins: [
+    searchPlugin({
+      // 配置项
+    }),
+  ],
 });

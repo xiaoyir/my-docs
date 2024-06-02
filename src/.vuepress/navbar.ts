@@ -16,6 +16,11 @@ export default navbar([
     icon: "pen-to-square",
     link: "/inAI/"
   },
+  {
+    text: "关于作者",
+    icon: "pen-to-square",
+    link: ""
+  }
   // {
   //   text: "博文",
   //   icon: "pen-to-square",
