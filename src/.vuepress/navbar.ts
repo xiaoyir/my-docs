@@ -1,9 +1,21 @@
 import { navbar } from "vuepress-theme-hope";
 
 export default navbar([
-  "/",
-  "/skill/",
-  "/inAI/"
+  {
+    text: "博客主页",
+    icon: "pen-to-square",
+    link: "/blog.md"
+  },
+  {
+    text: "学习指南",
+    icon: "pen-to-square",
+    link: "/skill/",
+  },
+  {
+    text: "AI实践",
+    icon: "pen-to-square",
+    link: "/inAI/"
+  },
   // {
   //   text: "博文",
   //   icon: "pen-to-square",

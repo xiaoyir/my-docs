@@ -1,6 +1,6 @@
 import { hopeTheme } from "vuepress-theme-hope";
 import navbar from "./navbar.js";
-import sidebar from "./sidebar/index.js";
+import sidebar from "./sidebar.js";
 
 export default hopeTheme({
   hostname: "https://mister-hope.github.io",
@@ -19,7 +19,7 @@ export default hopeTheme({
   docsDir: "src",
 
   // 导航栏
-  navbar,
+  navbar: navbar,
 
   // 侧边栏
   sidebar,

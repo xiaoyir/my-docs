@@ -1,5 +1,8 @@
 ---
 title: ThreadLocal正确用法
+icon: laptop-code
+category:
+  - java
 ---
 # 你真的会用ThreadLocal吗
 

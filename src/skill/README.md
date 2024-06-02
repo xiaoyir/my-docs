@@ -1,11 +1,11 @@
 ---
-title: 学习指南
+title: Java技术
 index: 0
 icon: book
 sticky: true
 star: true
 category:
-  - 学习指南
+  - Java技术
 ---
 大家好，我是小义
 <Catalog />

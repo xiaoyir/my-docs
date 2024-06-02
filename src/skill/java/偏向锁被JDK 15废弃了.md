@@ -1,5 +1,8 @@
 ---
-title: 偏向锁早被JDK 15废弃了
+title: 偏向锁早被JDK15废弃了
+icon: laptop-code
+category:
+  - java
 ---
 # 你背的“八股文”已经过时了，偏向锁早被JDK 15废弃了！
 JDK 15为什么要废弃偏向锁？要解决这个问题，得先来复习一下synchronized关键字。在Java中，synchronized是最基本最常用的锁机制，其底层原理涉及到对象头（Object Header）和监视器（Monitor）。监视器其实就是一种同步机制，用于管理对象的锁和线程的等待集，让我们把重点放在对象头上。
