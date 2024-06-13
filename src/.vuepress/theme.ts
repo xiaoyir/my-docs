@@ -24,8 +24,8 @@ export default hopeTheme({
   // 侧边栏
   sidebar,
 
-  // todo 页脚,要放自己的域名备案号
-  footer: "<a href='https://beian.miit.gov.cn/'>京ICP备2021007111号-2</a>",
+  //页脚,要放自己的域名备案号
+  footer: "<a href='https://beian.miit.gov.cn/'>桂ICP备2024034616号-1</a>",
   displayFooter: true,
 
   // 博客相关

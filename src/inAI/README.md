@@ -1,10 +1,10 @@
 ---
 title: AI实践
-icon: laptop-code
+icon: fire
 sticky: false
 star: false
 category:
   - AI实践
 ---
-大家好，我是小义
+AI大航海，一起乘风破浪!
 <Catalog />

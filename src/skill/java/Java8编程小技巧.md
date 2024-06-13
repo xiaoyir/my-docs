@@ -1,6 +1,6 @@
 ---
 title: Java8编程小技巧
-icon: laptop-code
+icon: tag
 category:
   - java
 ---

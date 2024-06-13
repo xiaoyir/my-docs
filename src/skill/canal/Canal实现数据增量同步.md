@@ -1,12 +1,13 @@
+---
+icon: tag
+---
 # 数据库增量数据同步，用Canal组件好使吗？
 
 # 1.技术介绍
 
 大家好，我是小义，今天来讲一下Canal。Canal是阿里巴巴开源的一款基于MySQL数据库binlog的增量订阅和消费组件，它的主要工作原理是伪装成MySQL slave，模拟MySQL slave的交互协议向MySQL Master发送dump协议。当MySQL master收到canal发送过来的dump请求后，开始推送binary log给canal，然后canal解析binary log，再发送到存储目的地，如MySQL，Kafka等。
 
-![img](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525165838.png)
-
-上面展示的是它的基本工作原理图，相信很多人都知道大名鼎鼎的Canal，项目官网https://github.com/alibaba/canal
+相信很多人都知道大名鼎鼎的Canal，项目官网https://github.com/alibaba/canal
 
 但是工作中不一定用到，今天小义就给大家实操演示一下。
 
@@ -20,7 +21,12 @@
 
 首先得安装好canal支持下的mysql版本，本次安装的是mysql-5.7.31。通过which mysql命令可查看mysql具体是在哪个目录，比如是/usr/local/mysql/bin/mysql 这个路径。接着执行/usr/local/mysql/bin/mysql --verbose --help | grep -A 1 'Default options' 命令可查看 mysql 配置文件加载顺序，如下图所示。
 
-![img_1](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525165920.png)
+```
+#执行命令
+/usr/local/mysql/bin/mysql --verbose --help | grep -A 1 'Default options'
+#输出结果
+/etc/my.cnf /etc/mysql/my.cnf -/.my.cnf
+```
 
 这个信息的意思是说服务器首先读取的是 /etc/my.cnf 文件，如果前一个文件不存在则继续读 /etc/mysql/my.cnf 文件，依此类推，如若还不存在便会去读~/.my.cnf文件。
 
@@ -28,8 +34,10 @@
 
 mysql需要先开启 Binlog 写入功能，配置 binlog-format 为 ROW 模式，my.cnf 文件末包含以下两行，表示会加载/etc/mysql/conf.d/和/etc/mysql/mysql.conf.d/目录下的配置文件。
 
-![img_2](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525165934.png)
-
+```
+!includedir /etc/mysql/conf.d/
+!includedir /etc/mysql/mysql.conf.d/
+```
 依据目录，给/etc/mysql/mysql.conf.d/mysqld.cnf文件添加如下配置：
 ```
 [mysqld]  
@@ -43,15 +51,29 @@ server_id=1 # 配置 MySQL replaction 需要定义，不要和 canal 的 slaveId
 
 用mysql -u root -p 命令登录MySQL，创建新的用户，并授权。
 
-![img_3](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525170043.png)
-
+```
+mysql> create user 'canal'@'%' identified by 'Canal@123456'
+```
 最好授权所有权限：grant all privileges on _._ to 'canal'@'%' identified by 'Canal@123456'
 
 ### 2.1.4 重启服务
 
-最后使用service mysql restart命令重启服务。show VARIABLES like 'log\_bin'可查看binlog是否已开启。show master status展示正在写入的binlog文件。
+最后使用service mysql restart命令重启服务。show VARIABLES like 'log_bin'可查看binlog是否已开启。show master status展示正在写入的binlog文件名如下。
 
-![img_4](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525170054.png)
+<table>
+    <tr>
+        <th>File</th>
+        <th>Position</th>
+        <th>Binlog_Do_DB</th>
+        <th>Binlog_Ignore_DB</th>
+    </tr>
+    <tr>
+        <td>mysql-bin.000005</td>
+        <td>430</td>
+        <td>star</td>
+        <td>mysql,information_schema</td>
+    </tr>
+</table>
 
 ## 2.2 canal部署
 
@@ -211,7 +233,7 @@ public class CanalClient implements InitializingBean {
 
 ### 2.3.3 sql验证
 
-启动项目，执行sql进行验证。新建数据库表code\_holder，表结构如下：
+启动项目，执行sql进行验证。新建数据库表code_holder，表结构如下：
 ```
 CREATE TABLE `code_holder` (  
 `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',  
@@ -220,9 +242,8 @@ CREATE TABLE `code_holder` (
 PRIMARY KEY (`id`) USING BTREE  
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 ```
-依次执行在navicat执行sql插入和更新，打印结果如下，cana能正常监听binlog变化，验证成功，可喜可贺！
+依次执行在navicat执行sql插入和更新，控制台打印结果显示出表值有变更，cana能正常监听binlog变化，验证成功，可喜可贺！
 
-![img_5](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525170113.png)
 
 # 3.同步MQ与缓存
 
@@ -555,17 +576,18 @@ public class TestHolderConsumer extends AbstractCanalRocketMqRedisService<CodeHo
 
 ### 3.2.3. Redis异步更新
 
-启动项目进行验证，修改code\_holder表的数据，如添加type=1,code=dd的一条数据。查看redis可以看到对应的缓存：
+启动项目进行验证，修改code_holder表的数据，如添加type=1,code=dd的一条数据。查看redis可以看到对应的缓存：
 
-![img_6](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525170137.png)
+```
+> get CodeHolder:5
+"{\"@class\":\"com.team.third.entity.CodeHolder\",\"id\":5,\"type\":1,\"code\":\"wy\"}"
+```
 
-更新该条数据，重新查看：
+更新该条数据，重新查看key="CodeHolder:5"的redis缓存也发发了变化。
 
-![img_7](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525170147.png)
 
-删除该条数据，redis中也会删除该缓存：
+删除该条数据，redis中也会删除该缓存。
 
-![img_8](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525170155.png)
 
 至此，Canal成功利用mq将mysql数据同步至redis。
 

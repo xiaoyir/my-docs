@@ -1,11 +1,12 @@
+---
+icon: tag
+---
 # Sentinel实操：微服务稳定性的流量守护神
 
 应运时代而生的Sentinel，旨在为分布式系统提供流量控制和熔断降级等功能，维护服务之间的稳定性。从12年由阿里巴巴中间件团队推出至今，已经成为主流的限流中间件，也承接了阿里巴巴近10年的双十一大促流量的核心场景，例如秒杀、消息削峰填谷、集群流量控制等。
 
 项目地址：https://github.com/alibaba/Sentinel，
-总体架构图如下:
 
-![img](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525172753.png)
 下来一起来简单实操体验一下
 
 ## 1、docker部署
@@ -45,7 +46,6 @@
 
 http://localhost:8858，账号/密码：sentinel/sentinel
 
-![img_2](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525172818.png)
 ## 2、Spring整合
 
 1.  maven依赖
@@ -91,7 +91,7 @@ public class TestController {
 
 启动项目成功后在sentinel控制台显示如下，新建流控规则，单机阙值设置大于0，如1则表示1s内只能访问一次。
 
-![img_1](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525172830.png)
+![img_1](https://cxyxy.fun/img/xyr/2024/06/14/02-21-11-9c50b2bec114a3b459fe911e6956643a-sentinel-e02bb7.png)
 资源名和@SentinelResource注解定义的一样，都为"fall"时，触发限流页面返回：Whitelabel Error Page
 
 

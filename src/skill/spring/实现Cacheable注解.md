@@ -1,3 +1,6 @@
+---
+icon: tag
+---
 # 实现Cacheable注解
 
 在之前的[Spring Cache解析](../Spring%20Cache解析/Spring%20Cache解析.md)

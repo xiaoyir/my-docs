@@ -1,6 +1,6 @@
 ---
 title: Java21新特性
-icon: laptop-code
+icon: tag
 category:
   - java
 ---
@@ -13,9 +13,8 @@ category:
 
 Spring Framework从6.0版本开始，IntelliJ IDEA从2023.3版本开始，Spring Boot从3.0版本开始，这三个都不再支持JDK 1.8，而是需要JDK 17或更高版本。这对于能用就用，不能用再换，喜欢使用Java 8 的大多数程序员来说，简直是晴天霹雳，这就好比你本来已经习惯了用筷子夹肉，突然筷子换成了刀叉，工具不一样总是会让人膈应。
 
-从Spring boot的脚手架官网中，地址https://start.spring.io/可以看出，spring initializr中确实没有了Java 8，真是时代抛弃你，招呼都不打一声。
+从Spring boot的脚手架官网中，地址https://start.spring.io/也可以看出，spring initializr中确实没有了Java 8，最低版本是从17开始了，真是时代抛弃你，招呼都不打一声。
 
-![spring-init](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525165018.png)
 ## 要不要换，该不该换
 
 不过大家也不用慌，可以改用阿里云的脚手架https://start.aliyun.com/，或者自己从0到1搭建适配java8版本的springboot项目都是可以的，相信这些也都难不倒各位大佬们。

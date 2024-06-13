@@ -1,3 +1,6 @@
+---
+icon: tag
+---
 # 用github搭建免费的私人图床，白嫖真香
 
 
@@ -14,7 +17,6 @@
 ### 生成token
 生成一个自己github账号的token令牌，点击右上角头像->Settings->左侧底部Developer settings->Personal Access tokens->tokens->Generate New Token，后续需要用到（已有的请忽略）。token秘钥只显示一次，请妥善保存。
 
-![img](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240526101825.png)
 
 ## PicGo图床工具
 ### 下载安装
@@ -22,24 +24,21 @@
 
 ### 配置github图床
 安装完成后看到如下界面，点击github图床配置参数，设为默认图床，点击确定。
-![img](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240526101848.png)
+![img](https://cxyxy.fun/img/xyr/2024/06/14/02-03-50-1c241c0e01b594d29cc5cf4f3711431e-picgo-github-14487d.png)
 
 ### 验证图片上传
 回到上传区，链接格式选markdown，选择所要上传的图片。
 
-![](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240526095646.png)
 
 
 等待一会提示上传成功，可在相册中查看图片链接，放到浏览器中可以正常访问。
 
-![img](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240526101926.png)
 ### super-prefix插件设置
 
-如果图片上传过多，文件命名就会比较杂乱，在PicGo上通过安装super-prefix插件，可以优雅地生成文件存储路径。
+如果图片上传过多，文件命名就会比较杂乱，在PicGo上点击左下角的插件设置，通过安装super-prefix插件或者rename-file插件，可以优雅地生成文件存储路径。
 
-![img](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240526101941.png)
 安装好插件后，点击设置小图标，选择配置plugin，可按如下参数设置路径，这样文件在仓库下的存储路径就会是形如/img/hello/20240525180647.png的格式。
-![img](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240526101957.png)
+![img](https://cxyxy.fun/img/xyr/2024/06/14/02-06-29-ebdcc194480325fa140e11a323bb63f0-picgo-plugins-458b0c.png)
 
 ## 结语
 至此，私人图床的服务就已经弄好了，通过PicGo工具可以方便的实现图片上传。

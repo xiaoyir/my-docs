@@ -1,3 +1,6 @@
+---
+icon: tag
+---
 # redis的主从、哨兵、切片集群
 
 随着业务量的增长，单一的Redis实例已经无法满足我们的需求。本文将深入探讨Redis的三种高可用性实践：主从复制、哨兵机制以及切片集群，构建更加健壮的Redis服务。
@@ -22,15 +25,14 @@ replicaof  xxx.xx.xx.xx  6379
 
 #### 增量同步
 
-在Redis的主从复制中，replication buffer和repl\_backlog\_buffer都扮演着重要的角色，但它们的用途和工作方式有所不同。
+在Redis的主从复制中，replication buffer和repl_backlog_buffer都扮演着重要的角色，但它们的用途和工作方式有所不同。
 
 replication buffer是主服务器上的一个缓冲区，用于存储将要发送给所有从服务器的写命令。当主服务器执行写操作时，这些命令会被放入replication buffer中，然后异步地发送给所有连接的从服务器。这个缓冲区确保了所有从服务器都能够接收到主服务器上发生的变更。
 
 然而，网络问题或其他故障可能导致从服务器与主服务器之间的连接断开。在这种情况下，如果从服务器重新连接并尝试同步，而replication buffer中的数据已经被覆盖（因为replication buffer是一个有限大小的缓冲区，旧的命令会被新的命令覆盖），从服务器就无法获取到断开期间主服务器上发生的变更。
 
-这时候repl\_backlog\_buffer，主服务器上的另一个缓冲区，就派上了用场。它以循环的方式存储一定时间内的写命令。即使replication buffer中的数据已经被新数据覆盖，repl\_backlog\_buffer仍然保留着这些旧数据。这样，即使从服务器在断开连接一段时间后重新连接，它仍然可以从repl\_backlog\_buffer中获取到断开期间错过的命令，并更新自己的数据。
+这时候repl_backlog_buffer，主服务器上的另一个缓冲区（圆环），就派上了用场。它以循环的方式存储一定时间内的写命令。即使replication buffer中的数据已经被新数据覆盖，repl_backlog_buffer仍然保留着这些旧数据。这样，即使从服务器在断开连接一段时间后重新连接，它仍然可以从repl_backlog_buffer中获取到断开期间错过的命令，并更新自己的数据。
 
-![img](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525180019.png)
 
 ### 哨兵机制：自动故障检测与恢复
 
@@ -65,7 +67,6 @@ Redis 实例会把自己的哈希槽信息发给和它相连接的其它实例�
 
 Redis 中的值通常非常大，包含数百万个元素的列表或排序集是很常见的。数据类型在语义上也很复杂。传输和合并这些类型的值可能是主要瓶颈，比较消耗性能。尽管MGET命令在Redis Cluster中不被支持，但用户可以通过其他方式来实现类似的功能。例如，可以使用Lua脚本在单个节点上执行多个GET操作，或者通过客户端逻辑将请求分发到正确的节点上。
 
-![img_1](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525180236.png)
 
 ### 结语
 

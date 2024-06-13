@@ -1,6 +1,6 @@
 ---
 title: 偏向锁早被JDK15废弃了
-icon: laptop-code
+icon: tag
 category:
   - java
 ---

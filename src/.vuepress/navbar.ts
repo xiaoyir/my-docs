@@ -3,7 +3,7 @@ import { navbar } from "vuepress-theme-hope";
 export default navbar([
   {
     text: "博客主页",
-    icon: "pen-to-square",
+    icon: "house",
     link: "/blog.md"
   },
   {
@@ -13,13 +13,13 @@ export default navbar([
   },
   {
     text: "AI实践",
-    icon: "pen-to-square",
+    icon: "fire",
     link: "/inAI/"
   },
   {
     text: "关于作者",
-    icon: "pen-to-square",
-    link: ""
+    icon: "user",
+    link: "/self/"
   }
   // {
   //   text: "博文",

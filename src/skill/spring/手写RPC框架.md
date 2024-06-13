@@ -1,3 +1,6 @@
+---
+icon: tag
+---
 # 手写RPC框架，一小时足矣！
 
 ## 一、项目结构
@@ -6,7 +9,6 @@ RPC即远程过程调用，也叫远程方法调用，RPC框架可以实现调�
 
 环境：JDK1.8，Intellij idea. 新建rpc maven项目，分别创建comsumer、provider、provider-com、rpc-framework四个maven项目子模块，其中provider和provider-com都属于方法提供者，用来模拟远程服务，下面一一介绍。
 
-![img](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525180521.png)
 
 ## 二、框架封装
 
@@ -47,7 +49,7 @@ rpc-framwork是框架的核心，需要处理网络请求，这里引入内嵌to
 
 ### 2.模块结构
 
-![img_1](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525180532.png)
+![img_1](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/2024/06/14/02-24-49-8e7b0b66416ede7c4836da012d046d7f-project-43d9e4.png)
 
 ### 3.common包
 
@@ -364,7 +366,6 @@ public class Bootstrap {
 
 该模块用来放置对外接口，即从provider模块中抽离出可供外部调用的服务接口，不存放其他内容，方便消费者引用。
 
-![img_2](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525180551.png)
 
 ```
 public interface SampleService {
@@ -446,11 +447,9 @@ public class Consumer {
 
 通过以上四大步骤，rpc框架代码已写完毕，启动provider，打印出tomcat日志说明服务正常运行。
 
-![img_3](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525180602.png)
 
-接着启动comsumer，可以看到远程方法已被调用
+接着启动comsumer，可以看到控制台打印出provider中的方法执行结果，远程方法已被调用
 
-![img_4](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525180609.png)
 
 ## 六、总结
 

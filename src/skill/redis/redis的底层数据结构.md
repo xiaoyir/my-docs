@@ -1,10 +1,13 @@
+---
+icon: tag
+---
 # redis的底层数据结构，看起来很复杂，其实一点也不简单
 
 众所周知，redis有String、List、Hash、Set、Sorted Set这五大基本数据类型，不同的数据类型适用不同的场景。不过相信大多数程序员用得最多的还是String，看起来String像是万能的，但你以为String就是简单的字符串吗？其实不然，redis每个数据类型的底层结构都大有文章。
 
 给大家丢个图就明白了，上面是基本类型，下面是底层结构。像有序集合Sorted Set就用到了压缩列表和跳表。
 
-![img](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525175907.png)
+![img](https://cxyxy.fun/img/xyr/2024/06/14/02-10-40-97e2d0f5600815309d95faea7d1dfd6d-redis-struct-b627ce.png)
 
 现在知道面试官为啥喜欢问redis底层数据结构跳表之类的了吧，原来知识点都在这呢，还不赶紧来复习一下。
 
@@ -12,7 +15,7 @@
 
 在介绍SDS之前，得先对redis有个基本认知，即redis是一个kv键值数据库，由一张大的哈希表组成，存储的每个字典条目（dictEntry）都是一组kv键值对，dictEntry结构中有三个8字节的指针，分别指向key、value 以及下一个dictEntry，三个指针共 24 字节。key和value都是redis对象（redisObject）。
 
-![img_6](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525175920.png)
+![img_6](https://cxyxy.fun/img/xyr/2024/06/14/02-11-24-bcc77e0dc24cb6de323d822b65c71dc8-objectKV-805540.png)
 
 
 一个redisObject会包含一个8B的元数据信息及一个8B的指针。具体来讲，8字节的元数据可能包括如下信息：
@@ -34,15 +37,15 @@ String数据类型背后使用的是自定义的动态字符串类型，也就�
 
 1.  int编码：当保存的是 Long 类型整数时，RedisObject 中的指针就直接赋值为整数数据了，这样就不用额外的指针再指向整数了，节省了指针的空间开销。
 
-![img_2](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525175929.png)
+![img_2](https://cxyxy.fun/img/xyr/2024/06/14/02-12-06-1091919a9b68a85aac375691728df80d-intcode-d490b5.png)
 
 2.  embstr编码：当保存的是字符串数据，并且字符串小于等于 44 字节时，RedisObject 中的元数据、指针和 SDS 是一块连续的内存区域，这样就可以避免内存碎片。
 
-![img_3](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525175937.png)
+![img_3](https://cxyxy.fun/img/xyr/2024/06/14/02-13-01-a45b01deea3df60284f1f079908d70e4-embstr-0c2a2b.png)
     
 3.  raw编码：当字符串大于 44 字节时，SDS 的数据量就开始变多了，Redis 就不再把 SDS 和 RedisObject 布局在一起了，而是会给 SDS 分配独立的空间，并用指针指向 SDS 结构。
 
-![img_4](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525175944.png)
+![img_4](https://cxyxy.fun/img/xyr/2024/06/14/02-13-38-764ea5da3b9747c5753cf101aa66691b-raw-9c2b52.png)
 
 
 ### 二、压缩列表
@@ -63,9 +66,8 @@ String数据类型背后使用的是自定义的动态字符串类型，也就�
 
 
 
-像下面这一个有序列表，3，7，11，19，22，26，37。不用跳表需要查找6次，而利用跳表建立的索引，只需要比较4次，时间复杂度可以从原来的O（N）降到O（logN）。
+像这一个有序列表，3，7，11，19，22，26，37。查找23，不用跳表需要查找6次，而利用跳表建立的索引，只需要比较4次，时间复杂度可以从原来的O（N）降到O（logN）。
 
-![img_5](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/20240525175952.png)
 
 ### 总结
 

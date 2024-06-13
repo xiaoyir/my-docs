@@ -2,9 +2,8 @@ import { sidebar } from "vuepress-theme-hope";
 export default sidebar({
     "/inAI/":[
         {
-            text: "AI+",
-            icon: "laptop-code",
-            //prefix: "java/",
+            text: "必看必会",
+            icon: "palette",
             collapsible: true,
             expanded: false,
             children: [
@@ -13,10 +12,21 @@ export default sidebar({
             ]
         },
     ],
+    "/self/":[
+        {
+            text: "心路历程",
+            icon: "palette",
+            collapsible: true,
+            expanded: false,
+            children: [
+                "一个普通程序员的前五年",
+            ]
+        },
+    ],
     "/skill/":[
         {
             text: "Java",
-            icon: "laptop-code",
+            icon: "bookmark",
             prefix: "java/",
             collapsible: true,
             expanded: false,
@@ -24,7 +34,7 @@ export default sidebar({
         },
         {
             text: "JVM",
-            icon: "laptop-code",
+            icon: "key",
             prefix: "jvm/",
             collapsible: true,
             expanded: false,
@@ -32,7 +42,7 @@ export default sidebar({
         },
         {
             text: "github",
-            icon: "laptop-code",
+            icon: "layer-group",
             prefix: "github/",
             collapsible: true,
             expanded: false,
@@ -40,7 +50,7 @@ export default sidebar({
         },
         {
             text: "nginx",
-            icon: "laptop-code",
+            icon: "circle-half-stroke",
             prefix: "nginx/",
             collapsible: true,
             expanded: false,
@@ -48,7 +58,7 @@ export default sidebar({
         },
         {
             text: "mysql",
-            icon: "laptop-code",
+            icon: "droplet",
             prefix: "mysql/",
             collapsible: true,
             expanded: false,
@@ -56,7 +66,7 @@ export default sidebar({
         },
         {
             text: "redis",
-            icon: "laptop-code",
+            icon: "magnet",
             prefix: "redis/",
             collapsible: true,
             expanded: false,
@@ -64,7 +74,7 @@ export default sidebar({
         },
         {
             text: "sentinel",
-            icon: "laptop-code",
+            icon: "globe",
             prefix: "sentinel/",
             collapsible: true,
             expanded: false,
@@ -72,7 +82,7 @@ export default sidebar({
         },
         {
             text: "canal",
-            icon: "laptop-code",
+            icon: "eye",
             prefix: "canal/",
             collapsible: true,
             expanded: false,
@@ -80,7 +90,7 @@ export default sidebar({
         },
         {
             text: "spring",
-            icon: "laptop-code",
+            icon: "lemon",
             prefix: "spring/",
             collapsible: true,
             expanded: false,
@@ -88,7 +98,7 @@ export default sidebar({
         },
         {
             text: "其他",
-            icon: "laptop-code",
+            icon: "paper-plane",
             prefix: "other/",
             collapsible: true,
             expanded: false,
@@ -96,7 +106,7 @@ export default sidebar({
         },
         {
             text: "学习书籍",
-            icon: "laptop-code",
+            icon: "folder",
             prefix: "books/",
             collapsible: true,
             expanded: false,

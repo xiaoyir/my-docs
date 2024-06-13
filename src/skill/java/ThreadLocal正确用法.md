@@ -1,6 +1,6 @@
 ---
 title: ThreadLocal正确用法
-icon: laptop-code
+icon: tag
 category:
   - java
 ---

@@ -5,14 +5,14 @@ import { searchPlugin } from "@vuepress/plugin-search";
 
 export default defineUserConfig({
 
-  base: "/my-docs/",
+  base: "/",
 
   lang: "zh-CN",
   title: "Java库",
   description: "个人博客",
 
   theme,
-
+  //permalink:"/:slug",
   // 和 PWA 一起启用
   // shouldPrefetch: false,
   alias: {
