@@ -7,7 +7,7 @@ export default navbar([
     link: "/blog.md"
   },
   {
-    text: "学习指南",
+    text: "学习之道",
     icon: "pen-to-square",
     link: "/skill/",
   },

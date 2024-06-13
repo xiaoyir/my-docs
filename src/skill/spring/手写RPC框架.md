@@ -49,7 +49,7 @@ rpc-framwork是框架的核心，需要处理网络请求，这里引入内嵌to
 
 ### 2.模块结构
 
-![img_1](https://javacool.oss-cn-shenzhen.aliyuncs.com/img/xyr/2024/06/14/02-24-49-8e7b0b66416ede7c4836da012d046d7f-project-43d9e4.png)
+![img_1](https://cxyxy.fun/img/xyr/2024/06/14/02-24-49-8e7b0b66416ede7c4836da012d046d7f-project-43d9e4.png)
 
 ### 3.common包
 
