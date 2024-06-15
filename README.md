@@ -10,4 +10,4 @@ https://www.cxyxy.fun
 
 AI新时代，一起学习，一起进步！
 
-![img](https://cxyxy.fun/img/xyr/2024/06/13/22-04-17-b3d7554a7350bfbc74d877d1b2ee069f-gzh-964cfe.jpg)
+![gzh](https://github.com/xiaoyir/my-docs/assets/30208637/0b6ae4f7-128c-467f-be90-ff62743573d5)
