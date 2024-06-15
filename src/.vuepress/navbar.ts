@@ -16,11 +16,11 @@ export default navbar([
     icon: "fire",
     link: "/inAI/"
   },
-  {
-    text: "知识星球",
-    icon: "star",
-    link: "/starr/star-intro.md"
-  },
+  // {
+  //   text: "知识星球",
+  //   icon: "star",
+  //   link: "/starr/star-intro.md"
+  // },
   {
     text: "关于网站",
     icon: "user",
