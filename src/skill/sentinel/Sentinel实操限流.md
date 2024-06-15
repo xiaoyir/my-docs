@@ -92,6 +92,7 @@ public class TestController {
 启动项目成功后在sentinel控制台显示如下，新建流控规则，单机阙值设置大于0，如1则表示1s内只能访问一次。
 
 ![img_1](https://cxyxy.fun/img/xyr/2024/06/14/02-21-11-9c50b2bec114a3b459fe911e6956643a-sentinel-e02bb7.png)
+
 资源名和@SentinelResource注解定义的一样，都为"fall"时，触发限流页面返回：Whitelabel Error Page
 
 

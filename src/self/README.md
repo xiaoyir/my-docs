@@ -1,5 +1,5 @@
 ---
-title: 关于作者
+title: 关于网站
 icon: laptop-code
 sticky: false
 star: false

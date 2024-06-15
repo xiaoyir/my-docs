@@ -31,7 +31,7 @@ export default hopeTheme({
   // 博客相关
   blog: {
     description: "I have a dream",
-    intro: "/intro.html",
+    intro: "/self/intro.html",
     medias: {
       Gitee: "https://example.com",
       GitHub: "https://example.com",

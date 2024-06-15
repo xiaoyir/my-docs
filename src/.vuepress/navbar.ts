@@ -17,7 +17,12 @@ export default navbar([
     link: "/inAI/"
   },
   {
-    text: "关于作者",
+    text: "知识星球",
+    icon: "star",
+    link: "/starr/star-intro.md"
+  },
+  {
+    text: "关于网站",
     icon: "user",
     link: "/self/"
   }

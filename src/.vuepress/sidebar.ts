@@ -19,6 +19,7 @@ export default sidebar({
             collapsible: true,
             expanded: false,
             children: [
+                "自我介绍",
                 "一个普通程序员的前五年",
             ]
         },
