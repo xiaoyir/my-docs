@@ -9,7 +9,7 @@ export default defineUserConfig({
   base: "/",
 
   lang: "zh-CN",
-  title: "Java库",
+  title: "知识库",
   description: "程序员个人博客，分享Java面试经验、知识点复习，AI探索与实践等，关注程序员自身的成长经历！",
   head: [
     // meta
