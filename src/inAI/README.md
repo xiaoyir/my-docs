@@ -3,6 +3,7 @@ title: AI实践
 icon: fire
 sticky: false
 star: false
+#contributors: false
 category:
   - AI实践
 ---
